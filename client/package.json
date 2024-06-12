@@ -17,6 +17,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
     "ethers": "5.7.2",
+    "react-toastify": "^10.0.5",
     "xrpl": "^3.1.0"
   }
 }
