@@ -119,7 +119,6 @@ function Home() {
     return (
         <div className="container mt-5">
             <ToastContainer />
-            <button className="btn btn-primary" onClick={getRole}>Get Role</button>
             <h2>Identity Verification</h2>
             <div className="form-group">
                 <input
