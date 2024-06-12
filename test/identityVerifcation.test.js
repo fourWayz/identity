@@ -1,7 +1,6 @@
 const { expect } = require("chai");
 const { ethers } = require("hardhat");
 
-
 describe("IdentityVerification", function () {
   let IdentityVerification;
   let identityVerification;
@@ -10,7 +9,7 @@ describe("IdentityVerification", function () {
   let user;
 
   beforeEach(async function () {
-    [admin, verifier, user, _] = await ethers.getSigners();
+    [admin, verifier, user] = await ethers.getSigners();
     IdentityVerification = await ethers.getContractFactory("IdentityVerification");
     identityVerification = await IdentityVerification.deploy();
     await identityVerification.deployed();
@@ -38,5 +37,14 @@ describe("IdentityVerification", function () {
 
     await identityVerification.deleteIdentity(user.address);
     await expect(identityVerification.getIdentity(user.address)).to.be.revertedWith("Identity does not exist");
+  });
+
+  it("Should log actions", async function () {
+    await identityVerification.addIdentity(user.address, "Alice", "alice@example.com");
+    await identityVerification.updateIdentity(user.address, "Alice Updated", "alice_updated@example.com");
+
+    await expect(identityVerification.connect(verifier).verifyIdentity(user.address))
+      .to.emit(identityVerification, 'IdentityActionLogged')
+      .withArgs("Identity Verified");
   });
 });
