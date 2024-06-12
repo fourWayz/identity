@@ -1,0 +1,36 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/IdentityVerification.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.0;\n\ncontract IdentityVerification {\n    struct Identity {\n        address user;\n        string name;\n        string email;\n        bool isVerified;\n        bool exists;\n    }\n\n    mapping(address => Identity) public identities;\n\n    event IdentityAdded(address indexed user, string name, string email);\n    event IdentityUpdated(address indexed user, string name, string email);\n    event IdentityDeleted(address indexed user);\n    event IdentityVerified(address indexed user);\n    event IdentityRevoked(address indexed user);\n    event IdentityActionLogged(string action);\n\n    function addIdentity(string memory _name, string memory _email) public {\n        require(!identities[msg.sender].exists, \"Identity already exists\");\n        identities[msg.sender] = Identity({\n            user: msg.sender,\n            name: _name,\n            email: _email,\n            isVerified: false,\n            exists: true\n        });\n        emit IdentityAdded(msg.sender, _name, _email);\n        logIdentityAction(\"Identity Added\");\n    }\n\n    function updateIdentity(string memory _name, string memory _email) public {\n        require(identities[msg.sender].exists, \"Identity does not exist\");\n        identities[msg.sender].name = _name;\n        identities[msg.sender].email = _email;\n        emit IdentityUpdated(msg.sender, _name, _email);\n        logIdentityAction(\"Identity Updated\");\n    }\n\n    function deleteIdentity() public {\n        require(identities[msg.sender].exists, \"Identity does not exist\");\n        delete identities[msg.sender];\n        emit IdentityDeleted(msg.sender);\n        logIdentityAction(\"Identity Deleted\");\n    }\n\n    function verifyIdentity() public {\n        require(identities[msg.sender].exists, \"Identity does not exist\");\n        identities[msg.sender].isVerified = true;\n        emit IdentityVerified(msg.sender);\n        logIdentityAction(\"Identity Verified\");\n    }\n\n    function revokeIdentity() public {\n        require(identities[msg.sender].exists, \"Identity does not exist\");\n        identities[msg.sender].isVerified = false;\n        emit IdentityRevoked(msg.sender);\n        logIdentityAction(\"Identity Revoked\");\n    }\n\n    function getIdentity(address _user) public view returns (Identity memory) {\n        require(identities[_user].exists, \"Identity does not exist\");\n        return identities[_user];\n    }\n\n    function isIdentityVerified(address _user) public view returns (bool) {\n        require(identities[_user].exists, \"Identity does not exist\");\n        return identities[_user].isVerified;\n    }\n\n    function logIdentityAction(string memory action) internal {\n        emit IdentityActionLogged(action);\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "evmVersion": "paris",
+    "optimizer": {
+      "enabled": false,
+      "runs": 200
+    },
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode",
+          "evm.deployedBytecode",
+          "evm.methodIdentifiers",
+          "metadata",
+          "devdoc",
+          "userdoc",
+          "storageLayout",
+          "evm.gasEstimates"
+        ],
+        "": [
+          "ast"
+        ]
+      }
+    },
+    "metadata": {
+      "useLiteralContent": true
+    }
+  }
+}

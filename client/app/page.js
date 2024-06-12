@@ -18,7 +18,6 @@ function Home() {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [identity, setIdentity] = useState(null);
-    const [role, setRole] = useState(null);
 
     useEffect(() => {
         const init = async () => {
@@ -32,8 +31,7 @@ function Home() {
                 setContract(contract);
                 const account = await signer.getAddress();
                 setAccount(account);
-                const role = await contract.roles(account);
-                setRole(role);
+                fetchIdentity();
             }
         };
         init();
@@ -45,10 +43,11 @@ function Home() {
 
     const submitIdentity = async () => {
         try {
-            await contract.addIdentity(account, name, email);
+            await contract.addIdentity(name, email);
             await storeIdentityOnXRPL(JSON.stringify({ name, email }));
             await logIdentityActionOnXRPL("Identity Added");
             notify("Identity added successfully", "success");
+            fetchIdentity();
         } catch (error) {
             notify("Failed to add identity", "error");
         }
@@ -56,9 +55,10 @@ function Home() {
 
     const updateIdentity = async () => {
         try {
-            await contract.updateIdentity(account, name, email);
+            await contract.updateIdentity(name, email);
             await logIdentityActionOnXRPL("Identity Updated");
             notify("Identity updated successfully", "success");
+            fetchIdentity();
         } catch (error) {
             notify("Failed to update identity", "error");
         }
@@ -66,9 +66,10 @@ function Home() {
 
     const verifyIdentity = async () => {
         try {
-            await contract.verifyIdentity(account);
+            await contract.verifyIdentity();
             await logIdentityActionOnXRPL("Identity Verified");
             notify("Identity verified successfully", "success");
+            fetchIdentity();
         } catch (error) {
             notify("Failed to verify identity", "error");
         }
@@ -76,9 +77,10 @@ function Home() {
 
     const revokeIdentity = async () => {
         try {
-            await contract.revokeIdentity(account);
+            await contract.revokeIdentity();
             await logIdentityActionOnXRPL("Identity Revoked");
             notify("Identity revoked successfully", "success");
+            fetchIdentity();
         } catch (error) {
             notify("Failed to revoke identity", "error");
         }
@@ -86,9 +88,10 @@ function Home() {
 
     const deleteIdentity = async () => {
         try {
-            await contract.deleteIdentity(account);
+            await contract.deleteIdentity();
             await logIdentityActionOnXRPL("Identity Deleted");
             notify("Identity deleted successfully", "success");
+            fetchIdentity();
         } catch (error) {
             notify("Failed to delete identity", "error");
         }
@@ -116,9 +119,33 @@ function Home() {
         }
     };
 
+    const renderConnectButton = () => {
+        return (
+            <button className="btn btn-primary" onClick={async () => {
+                if (window.ethereum) {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    await provider.send("eth_requestAccounts", []);
+                    const signer = provider.getSigner();
+                    const contract = new ethers.Contract(contractAddress, abi, signer);
+                    setProvider(provider);
+                    setSigner(signer);
+                    const account = await signer.getAddress();
+                    setAccount(account);
+                    fetchIdentity();
+                }
+            }}>
+                {account ? `Connected: ${account.slice(0, 6)}...${account.slice(-4)}` : 'Connect Wallet'}
+            </button>
+        );
+    };
+
     return (
         <div className="container mt-5">
             <ToastContainer />
+            <header className="d-flex justify-content-between align-items-center mb-4">
+                <h1>Cross-Chain Identity Verification</h1>
+                {renderConnectButton()}
+            </header>
             <h2>Identity Verification</h2>
             <div className="form-group">
                 <input
@@ -136,21 +163,53 @@ function Home() {
                     onChange={(e) => setEmail(e.target.value)}
                 />
             </div>
-            {role === '0' && (
-                <>
-                    <button className="btn btn-success mt-2" onClick={submitIdentity}>Submit Identity</button>
-                    <button className="btn btn-warning mt-2" onClick={updateIdentity}>Update Identity</button>
-                </>
-            )}
-            {role === '2' && <button className="btn btn-info mt-2" onClick={verifyIdentity}>Verify Identity</button>}
-            {role === '1' && (
-                <>
-                    <button className="btn btn-danger mt-2" onClick={revokeIdentity}>Revoke Identity</button>
-                    <button className="btn btn-dark mt-2" onClick={deleteIdentity}>Delete Identity</button>
-                </>
-            )}
-            <button className="btn btn-primary mt-2" onClick={fetchIdentity}>Fetch Identity</button>
-            <button className="btn btn-secondary mt-2" onClick={verifyIdentityOnXRPL}>Verify Identity on XRPL</button>
+            <button
+                className="btn btn-success mt-2"
+                onClick={submitIdentity}
+                disabled={identity && identity.exists}
+            >
+                Submit Identity
+            </button>
+            <button
+                className="btn btn-warning mt-2"
+                onClick={updateIdentity}
+                disabled={!identity || !identity.exists}
+            >
+                Update Identity
+            </button>
+            <button
+                className="btn btn-info mt-2"
+                onClick={verifyIdentity}
+                disabled={!identity || !identity.exists || identity.isVerified}
+            >
+                Verify Identity
+            </button>
+            <button
+                className="btn btn-danger mt-2"
+                onClick={revokeIdentity}
+                disabled={!identity || !identity.exists || !identity.isVerified}
+            >
+                Revoke Identity
+            </button>
+            <button
+                className="btn btn-dark mt-2"
+                onClick={deleteIdentity}
+                disabled={!identity || !identity.exists}
+            >
+                Delete Identity
+            </button>
+            <button
+                className="btn btn-primary mt-2"
+                onClick={fetchIdentity}
+            >
+                Fetch Identity
+            </button>
+            <button
+                className="btn btn-secondary mt-2"
+                onClick={verifyIdentityOnXRPL}
+            >
+                Verify Identity on XRPL
+            </button>
             {identity && (
                 <div className="mt-3">
                     <p>Name: {identity.name}</p>

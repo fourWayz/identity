@@ -1,10 +1,5 @@
 [
     {
-      "inputs": [],
-      "stateMutability": "nonpayable",
-      "type": "constructor"
-    },
-    {
       "anonymous": false,
       "inputs": [
         {
@@ -107,31 +102,7 @@
       "type": "event"
     },
     {
-      "anonymous": false,
       "inputs": [
-        {
-          "indexed": true,
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "indexed": false,
-          "internalType": "enum IdentityVerification.Role",
-          "name": "role",
-          "type": "uint8"
-        }
-      ],
-      "name": "RoleAssigned",
-      "type": "event"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        },
         {
           "internalType": "string",
           "name": "_name",
@@ -150,43 +121,6 @@
     },
     {
       "inputs": [],
-      "name": "admin",
-      "outputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "account",
-          "type": "address"
-        },
-        {
-          "internalType": "enum IdentityVerification.Role",
-          "name": "role",
-          "type": "uint8"
-        }
-      ],
-      "name": "assignRole",
-      "outputs": [],
-      "stateMutability": "nonpayable",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        }
-      ],
       "name": "deleteIdentity",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -297,13 +231,7 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        }
-      ],
+      "inputs": [],
       "name": "revokeIdentity",
       "outputs": [],
       "stateMutability": "nonpayable",
@@ -311,30 +239,6 @@
     },
     {
       "inputs": [
-        {
-          "internalType": "address",
-          "name": "",
-          "type": "address"
-        }
-      ],
-      "name": "roles",
-      "outputs": [
-        {
-          "internalType": "enum IdentityVerification.Role",
-          "name": "",
-          "type": "uint8"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        },
         {
           "internalType": "string",
           "name": "_name",
@@ -352,13 +256,7 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "address",
-          "name": "_user",
-          "type": "address"
-        }
-      ],
+      "inputs": [],
       "name": "verifyIdentity",
       "outputs": [],
       "stateMutability": "nonpayable",
