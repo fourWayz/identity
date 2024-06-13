@@ -90,7 +90,8 @@ function Home() {
     const submitIdentity = async () => {
         try {
             await contract.addIdentity(name, email);
-            await storeIdentityOnXRPL(JSON.stringify({ name, email }));
+            const submit = await storeIdentityOnXRPL(JSON.stringify({ name, email }));
+            await submit.wait()
             await logIdentityActionOnXRPL("Identity Added");
             notify("Identity added successfully", "success");
             fetchIdentity(account); // Refresh identity after submission
