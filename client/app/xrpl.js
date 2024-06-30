@@ -1,7 +1,10 @@
+"use client"
+
+const { useState } = require('react');
 const xrpl = require('xrpl');
 
 const client = new xrpl.Client('wss://s.altnet.rippletest.net:51233'); // Testnet URL
-
+let xrplAddress;
 // Utility function to validate XRPL address
 function isValidXrplAddress(address) {
     return xrpl.isValidClassicAddress(address);
@@ -19,6 +22,7 @@ async function storeIdentityOnXRPL(account, identityData) {
             throw new Error('Invalid XRPL destination address');
         }
 
+        xrplAddress =destination
         const currentLedger = await client.getLedgerIndex();
         const futureLedgerSequence = currentLedger + 50; // Setting a higher future ledger sequence
 
@@ -87,6 +91,7 @@ async function getIdentityFromXRPL(account) {
     try {
         await client.connect();
         const wallet = xrpl.Wallet.fromSeed('sEd757HjQzMr4Fevze9UzVyaM4XfxWJ'); // wallet's secret
+        xrplAddress =destination
 
         const response = await client.request({
             command: 'account_tx',
@@ -180,5 +185,6 @@ module.exports = {
     storeIdentityOnXRPL,
     getIdentityFromXRPL,
     verifyIdentityOnXRPL,
-    logIdentityActionOnXRPL
+    logIdentityActionOnXRPL,
+    xrplAddress
 };
