@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { storeIdentityOnXRPL, getIdentityFromXRPL, verifyIdentityOnXRPL, logIdentityActionOnXRPL } from './xrpl';
+import { storeIdentityOnXRPL, getIdentityFromXRPL, xrplAddress, logIdentityActionOnXRPL } from './xrpl';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -75,6 +75,7 @@ function Home() {
 
             const xrplIdentity = await getIdentityFromXRPL(account);
             if (xrplIdentity) {
+                console.log(xrplIdentity);
                 notify("Identity fetched from XRPL successfully", "success");
             } else {
                 notify("No identity found on XRPL", "info");
@@ -90,8 +91,7 @@ function Home() {
     const submitIdentity = async () => {
         try {
             await contract.addIdentity(name, email);
-            const submit = await storeIdentityOnXRPL(JSON.stringify({ name, email }));
-            await submit.wait()
+            await storeIdentityOnXRPL(JSON.stringify({ name, email }));
             await logIdentityActionOnXRPL("Identity Added");
             notify("Identity added successfully", "success");
             fetchIdentity(account); // Refresh identity after submission
@@ -154,9 +154,14 @@ function Home() {
             <header className="d-flex justify-content-between align-items-center mb-4">
                 <h1>Identity Verification</h1>
                 {account ? (
-                    <button className="btn btn-secondary">
-                        Connected: {account.slice(0, 6)}...{account.slice(-4)}
-                    </button>
+                    <>
+                        <button className="btn btn-secondary">
+                            Connected: {account.slice(0, 6)}...{account.slice(-4)}
+                        </button>
+                        <button className="btn btn-secondary">
+                            XRPL Connected: {xrplAddress?.slice(0, 6)}...{xrplAddress?.slice(-4)}
+                        </button>
+                    </>                 
                 ) : (
                     <button className="btn btn-primary" onClick={() => window.ethereum.request({ method: 'eth_requestAccounts' })}>
                         Connect Wallet
